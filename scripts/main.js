@@ -1,8 +1,10 @@
 const puzzleContainer = document.querySelector("#puzzle-container");
+const moveCounterElement = document.querySelector("#move-counter");
 
 let puzzle = [];
 let size = 3;
-const blockSize = 200;
+const blockSize = 150;
+let moveCounter = 0;
 
 generatePuzzle();
 randomizePuzzle();
@@ -57,6 +59,7 @@ function randomizePuzzle() {
 
     const puzzleNine = puzzle.find(item => item.value === size * size);
     puzzleNine.disabled = true;
+    moveCounter = 0;
 }
 
 function getRandomValues() {
@@ -100,6 +103,8 @@ function moveLeft() {
     const rightPuzzle = getRightPuzzle();
     if (rightPuzzle) {
         swapPositions(emptyPuzzle, rightPuzzle, true);
+        moveCounter++;
+        moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
     }
 }
 
@@ -108,6 +113,8 @@ function moveRigth() {
     const leftPuzzle = getLeftPuzzle();
     if (leftPuzzle) {
         swapPositions(emptyPuzzle, leftPuzzle, true);
+        moveCounter++;
+        moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
     }
 }
 
@@ -116,6 +123,8 @@ function moveUp() {
     const bellowPuzzle = getBellowPuzzle();
     if (bellowPuzzle) {
         swapPositions(emptyPuzzle, bellowPuzzle, false);
+        moveCounter++;
+        moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
     }
 }
 
@@ -124,6 +133,8 @@ function moveDown() {
     const abovePuzzle = getAbovePuzzle();
     if (abovePuzzle) {
         swapPositions(emptyPuzzle, abovePuzzle, false);
+        moveCounter++;
+        moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
     }
 }
 
