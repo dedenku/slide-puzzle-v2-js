@@ -92,21 +92,102 @@ function handelKeyDown(e) {
             moveDown();
             break;
     }
-
+    renderPuzzle();
 }
 
 function moveLeft() {
-
+    const emptyPuzzle = getEmptyPuzzle();
+    const rightPuzzle = getRightPuzzle();
+    if (rightPuzzle) {
+        swapPositions(emptyPuzzle, rightPuzzle, true);
+    }
 }
 
 function moveRigth() {
-
+    const emptyPuzzle = getEmptyPuzzle();
+    const leftPuzzle = getLeftPuzzle();
+    if (leftPuzzle) {
+        swapPositions(emptyPuzzle, leftPuzzle, true);
+    }
 }
 
 function moveUp() {
-
+    const emptyPuzzle = getEmptyPuzzle();
+    const bellowPuzzle = getBellowPuzzle();
+    if (bellowPuzzle) {
+        swapPositions(emptyPuzzle, bellowPuzzle, false);
+    }
 }
 
 function moveDown() {
+    const emptyPuzzle = getEmptyPuzzle();
+    const abovePuzzle = getAbovePuzzle();
+    if (abovePuzzle) {
+        swapPositions(emptyPuzzle, abovePuzzle, false);
+    }
+}
 
+function swapPositions(firstPuzzle, seconsPuzzle, isX = false) {
+    let temp = firstPuzzle.position;
+    firstPuzzle.position = seconsPuzzle.position;
+    seconsPuzzle.position = temp;
+
+    if (isX) {
+        temp = firstPuzzle.x;
+        firstPuzzle.x = seconsPuzzle.x;
+        seconsPuzzle.x = temp;
+    } else {
+        temp = firstPuzzle.y;
+        firstPuzzle.y = seconsPuzzle.y;
+        seconsPuzzle.y = temp;
+    }
+
+}
+
+function getLeftPuzzle() {
+    const emptyPuzzle = getEmptyPuzzle();
+    const isLeftEdge = getCol(emptyPuzzle.position) === 1;
+    if (isLeftEdge) {
+        return null;
+    }
+    const puzzle = getPuzzleByPos(emptyPuzzle.position - 1);
+    return puzzle;
+}
+
+function getRightPuzzle() {
+    const emptyPuzzle = getEmptyPuzzle();
+    const isRightEdge = getCol(emptyPuzzle.position) === size;
+    if (isRightEdge) {
+        return null;
+    }
+    const puzzle = getPuzzleByPos(emptyPuzzle.position + 1);
+    return puzzle;
+}
+
+function getAbovePuzzle() {
+    const emptyPuzzle = getEmptyPuzzle();
+    const isTopEdge = getRow(emptyPuzzle.position) === 1;
+    if (isTopEdge) {
+        return null;
+    }
+    const puzzle = getPuzzleByPos(emptyPuzzle.position - size);
+    return puzzle;
+}
+
+function getBellowPuzzle() {
+    const emptyPuzzle = getEmptyPuzzle();
+    const isBottomEdge = getRow(emptyPuzzle.position) === size;
+    if (isBottomEdge) {
+        return null;
+    }
+    const puzzle = getPuzzleByPos(emptyPuzzle.position + size);
+    return puzzle;
+}
+
+function getEmptyPuzzle() {
+    return puzzle.find((item) => item.disabled)
+}
+
+function getPuzzleByPos(pos) {
+    return puzzle.find((item) => item.position === pos)
 }

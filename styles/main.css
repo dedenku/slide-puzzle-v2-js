@@ -1,15 +1,17 @@
 #puzzle-container {
   width: 600px;
   height: 600px;
-  border: 1px solid;
+  background-color: bisque;
+  border-radius: 2px;
   position: relative;
 }
 
 .puzzle-item {
-  width: 200px;
-  height: 200px;
-  border: 1px solid;
+  width: 195px;
+  height: 195px;
+  border: 2px solid;
   position: absolute;
+  border-radius: 2px;
 
   display: flex;
   justify-content: center;
