@@ -1,0 +1,19 @@
+#puzzle-container {
+  width: 600px;
+  height: 600px;
+  border: 1px solid;
+  position: relative;
+}
+
+.puzzle-item {
+  width: 200px;
+  height: 200px;
+  border: 1px solid;
+  position: absolute;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+  background-color: #ddd;
+}
