@@ -8,13 +8,15 @@ let puzzleState2d = [];
 let size = 3;
 const blockSize = 150;
 let moveCounter = 0;
+let isAnimating = false;
+let animationStopped = false;
 
 generatePuzzle();
 randomizePuzzle();
 renderPuzzle();
 handleInput();
 updatePuzzleState2D();
-checkPuzzleSolved();
+checkPuzzleSolved('');
 
 function resetCounter() {
     moveCounter = 0;
@@ -29,7 +31,7 @@ document.querySelector("#shuffle-puzzle").addEventListener('click', function () 
     renderPuzzle();
     handleInput();
     updatePuzzleState2D();
-    checkPuzzleSolved();
+    checkPuzzleSolved('');
 });
 
 function getRow(pos) {
@@ -59,9 +61,9 @@ function generatePuzzle() {
 function renderPuzzle() {
     puzzleContainer.innerHTML = ''
     for (let puzzleItem of puzzle) {
-        if (puzzleItem.disabled) continue;
+        if (puzzleItem.value === size * size) continue; // Hanya lewati blok kosong
         puzzleContainer.innerHTML += `
-        <div class = "puzzle-item" style = "left: ${puzzleItem.x}px; top: ${puzzleItem.y}px">
+        <div class="puzzle-item" style="left: ${puzzleItem.x}px; top: ${puzzleItem.y}px">
             <p class="puzzle-numbers">${puzzleItem.value}</p>
         </div>
         `;
@@ -69,36 +71,21 @@ function renderPuzzle() {
 }
 
 function randomizePuzzle() {
+    resetPuzzleStatus();
     do {
         const randomValues = getRandomValues();
-        let i = 0;
-        for (let puzzleItem of puzzle) {
-            puzzleItem.value = randomValues[i];
-            i++;
+        for (let i = 0; i < puzzle.length; i++) {
+            puzzle[i].value = randomValues[i];
+            puzzle[i].disabled = (randomValues[i] === size * size);
         }
-
-        const puzzleNine = puzzle.find(item => item.value === size * size);
-        puzzleNine.disabled = true;
         moveCounter = 0;
         updatePuzzleState2D();
     } while (!isSolvable(puzzleState2d));
     resetCounter();
     updatePuzzleState2D();
-    checkPuzzleSolved();
+    checkPuzzleSolved('');
 }
 
-// function isSolvable(state) {
-//     let flatState = state.flat().filter(x => x !== 9);
-//     let inversions = 0;
-//     for (let i = 0; i < flatState.length; i++) {
-//         for (let j = i + 1; j < flatState.length; j++) {
-//             if (flatState[i] > flatState[j]) {
-//                 inversions++;
-//             }
-//         }
-//     }
-//     return inversions % 2 === 0;
-// }
 function isSolvable(state) {
     // Flatten state if it's a 2D array
     const flatState = Array.isArray(state[0]) ? state.flat() : state;
@@ -122,7 +109,6 @@ function isSolvable(state) {
     return inversions % 2 === 0;
 }
 
-
 function getRandomValues() {
     const values = []
     for (let i = 1; i <= size * size; i++) {
@@ -138,30 +124,27 @@ function handleInput() {
 }
 
 function handelKeyDown(e) {
+    if (isAnimating) return; // Abaikan input jika sedang animasi
     switch (e.key) {
         case 'ArrowLeft':
             moveLeft();
-            checkPuzzleSolved();
             break;
 
         case 'ArrowRight':
             moveRigth();
-            checkPuzzleSolved();
             break;
 
         case 'ArrowUp':
             moveUp();
-            checkPuzzleSolved();
             break;
 
         case 'ArrowDown':
             moveDown();
-            checkPuzzleSolved();
             break;
     }
     renderPuzzle();
     updatePuzzleState2D();
-    checkPuzzleSolved();
+    checkPuzzleSolved('');
 }
 
 function moveLeft() {
@@ -171,6 +154,7 @@ function moveLeft() {
         swapPositions(emptyPuzzle, rightPuzzle, true);
         moveCounter++;
         moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
+        resetPuzzleStatus();
     }
 }
 
@@ -181,6 +165,7 @@ function moveRigth() {
         swapPositions(emptyPuzzle, leftPuzzle, true);
         moveCounter++;
         moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
+        resetPuzzleStatus();
     }
 }
 
@@ -191,6 +176,7 @@ function moveUp() {
         swapPositions(emptyPuzzle, bellowPuzzle, false);
         moveCounter++;
         moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
+        resetPuzzleStatus();
     }
 }
 
@@ -201,25 +187,37 @@ function moveDown() {
         swapPositions(emptyPuzzle, abovePuzzle, false);
         moveCounter++;
         moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
+        resetPuzzleStatus();
     }
 }
 
-function swapPositions(firstPuzzle, seconsPuzzle, isX = false) {
+function swapPositions(firstPuzzle, secondPuzzle, isX = false) {
     let temp = firstPuzzle.position;
-    firstPuzzle.position = seconsPuzzle.position;
-    seconsPuzzle.position = temp;
+    firstPuzzle.position = secondPuzzle.position;
+    secondPuzzle.position = temp;
 
     if (isX) {
         temp = firstPuzzle.x;
-        firstPuzzle.x = seconsPuzzle.x;
-        seconsPuzzle.x = temp;
+        firstPuzzle.x = secondPuzzle.x;
+        secondPuzzle.x = temp;
     } else {
         temp = firstPuzzle.y;
-        firstPuzzle.y = seconsPuzzle.y;
-        seconsPuzzle.y = temp;
+        firstPuzzle.y = secondPuzzle.y;
+        secondPuzzle.y = temp;
     }
 
+    // Tukar status disabled
+    temp = firstPuzzle.disabled;
+    firstPuzzle.disabled = secondPuzzle.disabled;
+    secondPuzzle.disabled = temp;
 }
+
+function resetPuzzleStatus() {
+    for (let puzzleItem of puzzle) {
+        puzzleItem.disabled = (puzzleItem.value === size * size);
+    }
+}
+
 
 function getLeftPuzzle() {
     const emptyPuzzle = getEmptyPuzzle();
@@ -281,10 +279,21 @@ function updatePuzzleState2D() {
 }
 function checkPuzzleSolved() {
     const solvedPuzzle = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
-    if (puzzleState2d === solvedPuzzle) {
-        alert("PUZZLE SOLVED!")
+    const isSolved = puzzleState2d.every((row, i) => 
+        row.every((value, j) => value === solvedPuzzle[i][j])
+    );
+    
+    if (isSolved) {
+        // Tampilkan popup setelah sedikit penundaan
+        setTimeout(() => {
+            document.getElementById('puzzle-solved-popup').style.display = 'flex';
+        }, 500);  // Penundaan 500ms untuk memastikan gerakan terakhir selesai
     }
 }
+//POP UP SOLVED CLOSE
+document.getElementById('close-popup').addEventListener('click', function() {
+    document.getElementById('puzzle-solved-popup').style.display = 'none';
+});
 
 
 document.querySelector("#get-puzzle-array").addEventListener('click', function () {
@@ -295,9 +304,12 @@ document.querySelector("#get-puzzle-array").addEventListener('click', function (
 });
 
 async function animateSolution(moves) {
-    for (let move of moves) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        switch (move) {
+    isAnimating = true;
+    animationStopped = false;
+    for (let i = 0; i < moves.length; i++) {
+        if (animationStopped) break;
+        await new Promise(resolve => setTimeout(resolve, 500));
+        switch (moves[i]) {
             case "L":
                 moveLeft();
                 break;
@@ -313,13 +325,22 @@ async function animateSolution(moves) {
         }
         renderPuzzle();
         updatePuzzleState2D();
-        checkPuzzleSolved();
+
     }
+
+    isAnimating = false;
+    checkPuzzleSolved();
 }
+
 
 document.getElementById('solve-button').addEventListener('click', async function () {
     const moves = solvePuzzle(puzzleState2d);
     console.log(moves);
     resetCounter();
     await animateSolution(moves);
+});
+
+//stop solving animation
+document.getElementById('stop-animation').addEventListener('click', function () {
+    animationStopped = true;
 });
