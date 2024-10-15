@@ -1,3 +1,5 @@
+import { solvePuzzle } from './puzzle-solver.js';
+
 const puzzleContainer = document.querySelector("#puzzle-container");
 const moveCounterElement = document.querySelector("#move-counter");
 
@@ -12,13 +14,14 @@ randomizePuzzle();
 renderPuzzle();
 handleInput();
 updatePuzzleState2D();
+checkPuzzleSolved();
 
 function resetCounter() {
     moveCounter = 0;
     moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
 }
 
-function shufflePuzzle() {
+document.querySelector("#shuffle-puzzle").addEventListener('click', function () {
     puzzle = [];
     resetCounter();
     generatePuzzle();
@@ -26,7 +29,8 @@ function shufflePuzzle() {
     renderPuzzle();
     handleInput();
     updatePuzzleState2D();
-}
+    checkPuzzleSolved();
+});
 
 function getRow(pos) {
     return Math.ceil(pos / size);
@@ -65,18 +69,59 @@ function renderPuzzle() {
 }
 
 function randomizePuzzle() {
-    const randomValues = getRandomValues();
-    let i = 0;
-    for (let puzzleItem of puzzle) {
-        puzzleItem.value = randomValues[i];
-        i++;
+    do {
+        const randomValues = getRandomValues();
+        let i = 0;
+        for (let puzzleItem of puzzle) {
+            puzzleItem.value = randomValues[i];
+            i++;
+        }
+
+        const puzzleNine = puzzle.find(item => item.value === size * size);
+        puzzleNine.disabled = true;
+        moveCounter = 0;
+        updatePuzzleState2D();
+    } while (!isSolvable(puzzleState2d));
+    resetCounter();
+    updatePuzzleState2D();
+    checkPuzzleSolved();
+}
+
+// function isSolvable(state) {
+//     let flatState = state.flat().filter(x => x !== 9);
+//     let inversions = 0;
+//     for (let i = 0; i < flatState.length; i++) {
+//         for (let j = i + 1; j < flatState.length; j++) {
+//             if (flatState[i] > flatState[j]) {
+//                 inversions++;
+//             }
+//         }
+//     }
+//     return inversions % 2 === 0;
+// }
+function isSolvable(state) {
+    // Flatten state if it's a 2D array
+    const flatState = Array.isArray(state[0]) ? state.flat() : state;
+
+    // Validate input
+    if (flatState.length !== 9 || !flatState.every(n => n >= 1 && n <= 9)) {
+        throw new Error("Input harus berisi angka 1-9");
     }
 
-    const puzzleNine = puzzle.find(item => item.value === size * size);
-    puzzleNine.disabled = true;
-    moveCounter = 0;
-    updatePuzzleState2D();
+    // Count inversions, ignoring the empty tile (9)
+    let inversions = 0;
+    for (let i = 0; i < 8; i++) {
+        for (let j = i + 1; j < 9; j++) {
+            if (flatState[i] !== 9 && flatState[j] !== 9 && flatState[i] > flatState[j]) {
+                inversions++;
+            }
+        }
+    }
+
+    // A 3x3 puzzle is solvable if the number of inversions is even
+    return inversions % 2 === 0;
 }
+
 
 function getRandomValues() {
     const values = []
@@ -96,22 +141,27 @@ function handelKeyDown(e) {
     switch (e.key) {
         case 'ArrowLeft':
             moveLeft();
+            checkPuzzleSolved();
             break;
 
         case 'ArrowRight':
             moveRigth();
+            checkPuzzleSolved();
             break;
 
         case 'ArrowUp':
             moveUp();
+            checkPuzzleSolved();
             break;
 
         case 'ArrowDown':
             moveDown();
+            checkPuzzleSolved();
             break;
     }
     renderPuzzle();
     updatePuzzleState2D();
+    checkPuzzleSolved();
 }
 
 function moveLeft() {
@@ -229,27 +279,47 @@ function updatePuzzleState2D() {
         }
     }
 }
-
-function getPuzzleState() {
-    resetCounter();
-    console.log(puzzleState2d);
-    // console.log(moves);
-    // for (let i = 0; i < moves.length; i++) {
-    //     switch (moves[i]) {
-    //         case "L":
-    //             moveRigth()
-    //             break;
-    //         case "R":
-    //             moveLeft()
-    //             break;
-    //         case "U":
-    //             moveDown()
-    //             break;
-    //         case "D":
-    //             moveUp()
-    //             break;
-
-    //     }
-    //     setTimeout(1000);
-    // }
+function checkPuzzleSolved() {
+    const solvedPuzzle = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+    if (puzzleState2d === solvedPuzzle) {
+        alert("PUZZLE SOLVED!")
+    }
 }
+
+
+document.querySelector("#get-puzzle-array").addEventListener('click', function () {
+    console.log(puzzle);
+    console.log(puzzleState2d);
+    const moves = solvePuzzle(puzzleState2d);
+    console.log(moves);
+});
+
+async function animateSolution(moves) {
+    for (let move of moves) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        switch (move) {
+            case "L":
+                moveLeft();
+                break;
+            case "R":
+                moveRigth();
+                break;
+            case "U":
+                moveUp();
+                break;
+            case "D":
+                moveDown();
+                break;
+        }
+        renderPuzzle();
+        updatePuzzleState2D();
+        checkPuzzleSolved();
+    }
+}
+
+document.getElementById('solve-button').addEventListener('click', async function () {
+    const moves = solvePuzzle(puzzleState2d);
+    console.log(moves);
+    resetCounter();
+    await animateSolution(moves);
+});

@@ -142,15 +142,25 @@ function main(puzzle) {
     }
 }
 
-// Solve the puzzle and extract the moves
-let br = main([
-    [6, 2, 8],
-    [4, 7, 1],
-    [9, 3, 5]
-]);
+// // Solve the puzzle and extract the moves
+// let br = main([
+//     [6, 2, 8],
+//     [4, 7, 1],
+//     [9, 3, 5]
+// ]);
 
-// Extract only the directions from the solution
-let moves = br.map(step => step.dir).filter(dir => dir !== '');
+// // Extract only the directions from the solution
+// let moves = br.map(step => step.dir).filter(dir => dir !== '');
 
-// Output the moves as a character array
-console.log(moves);
+// // Output the moves as a character array
+// // console.log(moves);
+
+function solvePuzzle(puzzleState) {
+    let currentState = puzzleState.map(row => row.map(val => val === 0 ? 9 : val));
+    let br = main(currentState);
+    let moves = br.map(step => step.dir).filter(dir => dir !== '');
+    return moves;
+}
+
+// Export fungsi yang akan digunakan di main.js
+export { solvePuzzle };

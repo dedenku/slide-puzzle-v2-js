@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./styles/main.css">
+    <!-- <link rel="stylesheet" href="./styles/unsolvable.css"> -->
     <title>Slide Puzzle</title>
 </head>
 
@@ -13,7 +14,7 @@
     <div class="grid-container">
 
         <div class="grid-left">
-            <button onclick="shufflePuzzle()">SHUFFLE</button>
+            <button id="shuffle-puzzle">SHUFFLE</button>
         </div>
 
     <div class="main-container">        
@@ -22,11 +23,12 @@
     </div>
 
     <div class="grid-right">
-        <button onclick="getPuzzleState()">SOLVE</button>
+        <button id="get-puzzle-array">GET 2D ARRAY LOG</button>
+        <button id="solve-button">SOLVE PUZZLE</button>
     </div>
 
 </div>
-<script src="./scripts/main.js" defer></script>
+<script type="module" src="./scripts/main.js" defer></script>
 
 </body>
 
