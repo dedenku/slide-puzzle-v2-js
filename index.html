@@ -14,26 +14,28 @@
     <div class="grid-container">
 
         <div class="grid-left">
-            <button id="shuffle-puzzle">SHUFFLE</button>
+            <button class="main-btn" id="shuffle-puzzle">SHUFFLE</button>
         </div>
 
     <div class="main-container">        
         <div id="puzzle-container"> </div>
-        <p id="move-counter">MOVES: 0</p>
+        <div class="counter-status">
+            <div id="move-counter">MOVES: 0</div>
+        <div id="astar-steps">A* STEPS: -</div>
+        </div>
     </div>
 
     <div class="grid-right">
-        <button id="get-puzzle-array">GET 2D ARRAY LOG</button>
-        <button id="solve-button">SOLVE PUZZLE</button>
-        <button id="stop-animation">STOP AUTO SOLVING</button>
+        <button class="main-btn" id="solve-button">SOLVE PUZZLE</button>
+        <button class="main-btn" id="stop-animation">STOP AUTO SOLVING</button>
     </div>
 
 </div>
 <!-- pop up solved -->
 <div id="puzzle-solved-popup" class="popup" style="display: none;">
     <div class="popup-content">
-        <h2>Congratulations!</h2>
-        <p>You've solved the puzzle!</p>
+        <h2 id="puzzle-solved-title">Congratulations!</h2>
+        <p id="puzzle-solved-message"></p>
         <button id="close-popup">Close</button>
     </div>
 </div>

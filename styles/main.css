@@ -10,17 +10,18 @@
 body {
   margin: 0;
   padding: 0;
+  background-color: rgb(5, 0, 39);
 }
 
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
+  gap: 10px;
   grid-template-rows: 1fr;
-  grid-column-gap: 8px;
-  grid-row-gap: 0px;
 }
 
 .grid-left {
+  grid-column: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -28,13 +29,56 @@ body {
 }
 
 .grid-right {
+  grid-column: 3;
   display: flex;
+  gap: 10px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
+.main-btn {
+  color: rgb(5, 0, 39);
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: bold;
+  padding: 20px;
+  position: relative;
+  border: none;
+  border-radius: 24px;
+  background-color: white;
+  box-shadow: 0 0 10px rgb(255, 255, 255);
+  margin: 10px;
+}
+
+.counter-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4rem;
+
+}
+
+button:hover {
+  box-shadow: none;
+}
+
+.main-btn:hover::before {
+  content: "";
+  position: absolute;
+  background-image: conic-gradient(#ee7752, #e73c7e, #23a6d5, #23d5ab, #ee7752);
+  width: 105%;
+  height: 105%;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: -1;
+  padding: 5px;
+  border-radius: 24px;
+  box-shadow: 0 0 10px rgb(255, 255, 255);
+}
+
 .main-container {
+  grid-column: 2;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -42,7 +86,7 @@ body {
   align-items: center;
 }
 
-#move-counter {
+#move-counter, #astar-steps{
   padding: 10px;
   margin-top: 10px;
   font-size: 1.5em;
@@ -52,11 +96,13 @@ body {
 }
 
 #puzzle-container {
-  width: var(--box-size);
-  height: var(--box-size);
+  width: 100%;
+  max-width: var(--box-size); /* atau ukuran maksimum yang Anda inginkan */
+  aspect-ratio: 1 / 1; /* Memastikan container selalu persegi */
+  position: relative;
+  margin: auto;
   background-color: rgb(255, 255, 255);
   border-radius: 4px;
-  position: relative;
   margin: 0;
 }
 
@@ -76,15 +122,16 @@ body {
 }
 
 .puzzle-item {
-  width: var(--block-size);
-  height: var(--block-size);
   position: absolute;
-  z-index: 1;
+  width: 33.33%; /* Untuk puzzle 3x3 */
+  height: 33.33%;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 1.5em; /* Ukuran font responsif */
+  box-sizing: border-box;
+  z-index: 1;
   background-color: transparent;
-  /* box-shadow: 1px 1px 4px rgba(0, 0, 0, .1); */
 }
 
 .puzzle-numbers {
@@ -125,7 +172,63 @@ body {
 
 .popup-content {
   background-color: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 5px;
   text-align: center;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --box-size: 300px;
+    --block-size: 100px;
+  }
+
+  .grid-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    margin: 0;
+  }
+
+  .grid-left {
+    grid-row: 2;
+    grid-column: 1;
+  }
+
+  .main-container {
+    grid-row: 1;
+    grid-column: 1;
+    min-height: min-content;
+    margin-top: 24px;
+  }
+
+  .counter-status {
+    gap: 2rem;
+  }
+
+  #move-counter, #astar-steps {
+    margin-top: 5px;
+    font-size: 1em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    color: white;
+  }
+
+  .grid-right {
+    grid-row: 3;
+    grid-column: 1;
+  }
+
+  .main-btn {
+    width: 60%;
+  }
+
+  #puzzle-container {
+    width: var(--box-size);
+    height: var(--box-size);
+  }
+
+  .puzzle-item {
+    width: var(--block-size);
+    height: var(--block-size);
+  }
 }

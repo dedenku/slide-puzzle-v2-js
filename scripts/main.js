@@ -2,12 +2,14 @@ import { solvePuzzle } from './puzzle-solver.js';
 
 const puzzleContainer = document.querySelector("#puzzle-container");
 const moveCounterElement = document.querySelector("#move-counter");
+let moveCounter = 0;
+
+let astarStepsElement = document.querySelector("#astar-steps");
+let astarSteps = 0;
 
 let puzzle = [];
 let puzzleState2d = [];
 let size = 3;
-const blockSize = 150;
-let moveCounter = 0;
 let isAnimating = false;
 let animationStopped = false;
 
@@ -16,11 +18,18 @@ randomizePuzzle();
 renderPuzzle();
 handleInput();
 updatePuzzleState2D();
+updateAStarSteps();
 checkPuzzleSolved('');
 
 function resetCounter() {
     moveCounter = 0;
     moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
+    updateAStarSteps();
+}
+
+function updateAStarSteps() {
+    astarSteps = solvePuzzle(puzzleState2d).length;
+    astarStepsElement.innerHTML = `A* STEPS: ${astarSteps}`;
 }
 
 document.querySelector("#shuffle-puzzle").addEventListener('click', function () {
@@ -31,7 +40,6 @@ document.querySelector("#shuffle-puzzle").addEventListener('click', function () 
     renderPuzzle();
     handleInput();
     updatePuzzleState2D();
-    checkPuzzleSolved('');
 });
 
 function getRow(pos) {
@@ -51,24 +59,25 @@ function generatePuzzle() {
         puzzle.push({
             value: i,
             position: i,
-            x: (getCol(i) - 1) * blockSize,
-            y: (getRow(i) - 1) * blockSize,
+            x: ((getCol(i) - 1) / size) * 100,
+            y: ((getRow(i) - 1) / size) * 100,
             disabled: false
         });
     }
 }
 
 function renderPuzzle() {
-    puzzleContainer.innerHTML = ''
+    puzzleContainer.innerHTML = '';
     for (let puzzleItem of puzzle) {
-        if (puzzleItem.value === size * size) continue; // Hanya lewati blok kosong
+        if (puzzleItem.disabled) continue;
         puzzleContainer.innerHTML += `
-        <div class="puzzle-item" style="left: ${puzzleItem.x}px; top: ${puzzleItem.y}px">
-            <p class="puzzle-numbers">${puzzleItem.value}</p>
-        </div>
+            <div class="puzzle-item" style="left: ${puzzleItem.x}%; top: ${puzzleItem.y}%;">
+                <p class="puzzle-numbers">${puzzleItem.value}</p>
+            </div>
         `;
     }
 }
+
 
 function randomizePuzzle() {
     resetPuzzleStatus();
@@ -83,7 +92,7 @@ function randomizePuzzle() {
     } while (!isSolvable(puzzleState2d));
     resetCounter();
     updatePuzzleState2D();
-    checkPuzzleSolved('');
+    updateAStarSteps();
 }
 
 function isSolvable(state) {
@@ -144,7 +153,7 @@ function handelKeyDown(e) {
     }
     renderPuzzle();
     updatePuzzleState2D();
-    checkPuzzleSolved('');
+    checkPuzzleSolved(false);
 }
 
 function moveLeft() {
@@ -277,31 +286,36 @@ function updatePuzzleState2D() {
         }
     }
 }
-function checkPuzzleSolved() {
+
+function checkPuzzleSolved(isAutoSolved = false) {
     const solvedPuzzle = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
-    const isSolved = puzzleState2d.every((row, i) => 
+    const isSolved = puzzleState2d.every((row, i) =>
         row.every((value, j) => value === solvedPuzzle[i][j])
     );
-    
+
     if (isSolved) {
-        // Tampilkan popup setelah sedikit penundaan
+        const title = document.getElementById('puzzle-solved-title');
+        const message = document.getElementById('puzzle-solved-message');
+
+        if (isAutoSolved) {
+            title.textContent = "Puzzle Solved Automatically!";
+            message.textContent = "The puzzle has been solved using the automatic solver.";
+        } else {
+            title.textContent = "Congratulations!";
+            message.textContent = `You've solved the puzzle manually in ${moveCounter} moves!`;
+        }
+
         setTimeout(() => {
             document.getElementById('puzzle-solved-popup').style.display = 'flex';
-        }, 500);  // Penundaan 500ms untuk memastikan gerakan terakhir selesai
+        }, 500);
     }
 }
+
 //POP UP SOLVED CLOSE
-document.getElementById('close-popup').addEventListener('click', function() {
+document.getElementById('close-popup').addEventListener('click', function () {
     document.getElementById('puzzle-solved-popup').style.display = 'none';
 });
 
-
-document.querySelector("#get-puzzle-array").addEventListener('click', function () {
-    console.log(puzzle);
-    console.log(puzzleState2d);
-    const moves = solvePuzzle(puzzleState2d);
-    console.log(moves);
-});
 
 async function animateSolution(moves) {
     isAnimating = true;
@@ -329,7 +343,7 @@ async function animateSolution(moves) {
     }
 
     isAnimating = false;
-    checkPuzzleSolved();
+    checkPuzzleSolved(true);
 }
 
 
