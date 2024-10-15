@@ -70,12 +70,54 @@ function renderPuzzle() {
     puzzleContainer.innerHTML = '';
     for (let puzzleItem of puzzle) {
         if (puzzleItem.disabled) continue;
-        puzzleContainer.innerHTML += `
-            <div class="puzzle-item" style="left: ${puzzleItem.x}%; top: ${puzzleItem.y}%;">
-                <p class="puzzle-numbers">${puzzleItem.value}</p>
-            </div>
-        `;
+        const puzzleElement = document.createElement('div');
+        puzzleElement.className = 'puzzle-item';
+        puzzleElement.style.left = `${puzzleItem.x}%`;
+        puzzleElement.style.top = `${puzzleItem.y}%`;
+        puzzleElement.innerHTML = `<p class="puzzle-numbers">${puzzleItem.value}</p>`;
+
+        // Tambahkan event listener untuk klik
+        puzzleElement.addEventListener('click', () => handlePuzzleClick(puzzleItem));
+
+        puzzleContainer.appendChild(puzzleElement);
     }
+}
+
+function handlePuzzleClick(clickedItem) {
+    const emptyPuzzle = getEmptyPuzzle();
+
+    // Cek apakah blok yang diklik bersebelahan dengan blok kosong
+    if (isAdjacent(clickedItem, emptyPuzzle)) {
+
+        // Tukar posisi
+        swapPositions(clickedItem, emptyPuzzle);
+        moveCounter++;
+        moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
+
+        renderPuzzle();
+        updatePuzzleState2D();
+        checkPuzzleSolved();
+        
+    }
+
+    // if (isAdjacent(clickedItem, emptyPuzzle)) {
+    //     const clickedElement = document.querySelector(`.puzzle-item[style*="left: ${clickedItem.x}%"][style*="top: ${clickedItem.y}%"]`);
+    //     clickedElement.classList.add('clicked');
+        
+    //     setTimeout(() => {
+    //         clickedElement.classList.remove('clicked');
+    //         swapPositions(clickedItem, emptyPuzzle);
+    //         // ... kode lainnya ...
+    //     }, 100);
+    // }
+}
+
+function isAdjacent(item1, item2) {
+    const rowDiff = Math.abs(getRow(item1.position) - getRow(item2.position));
+    const colDiff = Math.abs(getCol(item1.position) - getCol(item2.position));
+
+    // Blok bersebelahan jika perbedaan baris + kolom = 1
+    return (rowDiff + colDiff === 1);
 }
 
 
@@ -200,25 +242,24 @@ function moveDown() {
     }
 }
 
-function swapPositions(firstPuzzle, secondPuzzle, isX = false) {
-    let temp = firstPuzzle.position;
-    firstPuzzle.position = secondPuzzle.position;
-    secondPuzzle.position = temp;
+function swapPositions(item1, item2) {
+    const tempPosition = item1.position;
+    item1.position = item2.position;
+    item2.position = tempPosition;
 
-    if (isX) {
-        temp = firstPuzzle.x;
-        firstPuzzle.x = secondPuzzle.x;
-        secondPuzzle.x = temp;
-    } else {
-        temp = firstPuzzle.y;
-        firstPuzzle.y = secondPuzzle.y;
-        secondPuzzle.y = temp;
-    }
+    const tempX = item1.x;
+    item1.x = item2.x;
+    item2.x = tempX;
+
+    const tempY = item1.y;
+    item1.y = item2.y;
+    item2.y = tempY;
+
 
     // Tukar status disabled
-    temp = firstPuzzle.disabled;
-    firstPuzzle.disabled = secondPuzzle.disabled;
-    secondPuzzle.disabled = temp;
+    // temp = firstPuzzle.disabled;
+    // firstPuzzle.disabled = secondPuzzle.disabled;
+    // secondPuzzle.disabled = temp;
 }
 
 function resetPuzzleStatus() {
@@ -269,7 +310,8 @@ function getBellowPuzzle() {
 }
 
 function getEmptyPuzzle() {
-    return puzzle.find((item) => item.disabled)
+    return puzzle.find(item => item.value === size * size);
+    // return puzzle.find((item) => item.disabled)
 }
 
 function getPuzzleByPos(pos) {
