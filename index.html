@@ -9,12 +9,25 @@
 </head>
 
 <body>
-    <div class="main-container">
-        <p id="move-counter">MOVES: 0</p>
-        
+
+    <div class="grid-container">
+
+        <div class="grid-left">
+            <button onclick="shufflePuzzle()">SHUFFLE</button>
+        </div>
+
+    <div class="main-container">        
         <div id="puzzle-container"> </div>
+        <p id="move-counter">MOVES: 0</p>
     </div>
-    <script src="./scripts/main.js"></script>
+
+    <div class="grid-right">
+        <button onclick="getPuzzleState()">SOLVE</button>
+    </div>
+
+</div>
+<script src="./scripts/main.js" defer></script>
+
 </body>
 
 </html>

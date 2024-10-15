@@ -1,6 +1,6 @@
 :root {
   --box-size: 450px;
-  --block-size: 142px;
+  --block-size: 150px;
 }
 
 * {
@@ -10,6 +10,28 @@
 body {
   margin: 0;
   padding: 0;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: 1fr;
+  grid-column-gap: 8px;
+  grid-row-gap: 0px;
+}
+
+.grid-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .main-container {
@@ -22,15 +44,18 @@ body {
 
 #move-counter {
   padding: 10px;
-  margin: 10px;
+  margin-top: 10px;
   font-size: 1.5em;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: bold;
+  color: white;
 }
 
 #puzzle-container {
   width: var(--box-size);
   height: var(--box-size);
-  background-color: bisque;
-  border-radius: 2px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 4px;
   position: relative;
   margin: 0;
 }
@@ -38,25 +63,48 @@ body {
 #puzzle-container::before {
   position: absolute;
   content: "";
-  background-color: blue;
-  height: 105%;
+  background-image: conic-gradient(#ee7752, #e73c7e, #23a6d5, #23d5ab, #ee7752);
+  box-shadow: 1px 5px 15px rgba(0, 0, 0, 0.7);
+  height: 115%;
   width: 105%;
-  top: 50%;
+  padding: 10px;
+  top: 55%;
   left: 50%;
   translate: -50% -50%;
   z-index: -1;
+  border-radius: 16px;
 }
 
 .puzzle-item {
   width: var(--block-size);
   height: var(--block-size);
   position: absolute;
-  border-radius: 2px;
-  border: 2px solid bisque;
-
+  z-index: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2em;
-  background-color: #ddd;
+  background-color: transparent;
+  /* box-shadow: 1px 1px 4px rgba(0, 0, 0, .1); */
+}
+
+.puzzle-numbers {
+  font-size: 3em;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.puzzle-item::after {
+  position: absolute;
+  content: "";
+  width: 95%;
+  height: 95%;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: -1;
+  background-color: rgba(55, 0, 255, 0.3);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4) inset;
+  border-radius: 4px;
 }
