@@ -33,6 +33,7 @@ function updateAStarSteps() {
 }
 
 document.querySelector("#shuffle-puzzle").addEventListener('click', function () {
+    if (isAnimating) return;
     puzzle = [];
     resetCounter();
     generatePuzzle();
@@ -97,13 +98,26 @@ function handlePuzzleClick(clickedItem) {
         renderPuzzle();
         updatePuzzleState2D();
         checkPuzzleSolved();
-        
+
     }
+    if (isAnimating) return; // Abaikan klik jika sedang animasi
+
+    const clickedElement = clickedItem.target.closest('.puzzle-item');
+    if (!clickedElement) return;
+
+    const position = parseInt(clickedElement.dataset.position);
+    const onClickedItem = puzzle.find(item => item.position === position);
+
+    if (onClickedItem) {
+        handlePuzzleClick(onClickedItem, clickedElement);
+    }
+
+
 
     // if (isAdjacent(clickedItem, emptyPuzzle)) {
     //     const clickedElement = document.querySelector(`.puzzle-item[style*="left: ${clickedItem.x}%"][style*="top: ${clickedItem.y}%"]`);
     //     clickedElement.classList.add('clicked');
-        
+
     //     setTimeout(() => {
     //         clickedElement.classList.remove('clicked');
     //         swapPositions(clickedItem, emptyPuzzle);
@@ -361,6 +375,7 @@ document.getElementById('close-popup').addEventListener('click', function () {
 
 async function animateSolution(moves) {
     isAnimating = true;
+    puzzleContainer.classList.add('animating');
     animationStopped = false;
     for (let i = 0; i < moves.length; i++) {
         if (animationStopped) break;
@@ -385,11 +400,13 @@ async function animateSolution(moves) {
     }
 
     isAnimating = false;
+    puzzleContainer.classList.remove('animating');
     checkPuzzleSolved(true);
 }
 
 
 document.getElementById('solve-button').addEventListener('click', async function () {
+    if (isAnimating) return;
     const moves = solvePuzzle(puzzleState2d);
     console.log(moves);
     resetCounter();
@@ -398,5 +415,7 @@ document.getElementById('solve-button').addEventListener('click', async function
 
 //stop solving animation
 document.getElementById('stop-animation').addEventListener('click', function () {
+    isAnimating = false;
     animationStopped = true;
+    puzzleContainer.classList.remove('animating');
 });
