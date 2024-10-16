@@ -100,6 +100,8 @@ button:hover {
   max-width: var(--box-size); /* atau ukuran maksimum yang Anda inginkan */
   aspect-ratio: 1 / 1; /* Memastikan container selalu persegi */
   position: relative;
+  justify-content: center;
+  align-items: center;
   margin: auto;
   background-color: rgb(255, 255, 255);
   border-radius: 4px;
@@ -155,8 +157,8 @@ button:hover {
 
 .puzzle-item {
   position: absolute;
-  width: 33.33%; /* Untuk puzzle 3x3 */
-  height: 33.33%;
+  width: calc(100% / 3);
+  height: calc(100% / 3);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -164,12 +166,12 @@ button:hover {
   box-sizing: border-box;
   z-index: 1;
   background-color: transparent;
-  transition: left 0.5s ease-out, top 0.5s ease-out; /* Durasi diperpanjang dan menggunakan easing untuk animasi yang lembut */
+  transition: transform 0.3s ease;
 }
 
-#puzzle-container.animating .puzzle-item {
+/* #puzzle-container.animating .puzzle-item {
   animation: pulse 1s infinite alternate;
-}
+} */
 
 @keyframes pulse {
   from {

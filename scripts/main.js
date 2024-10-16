@@ -4,7 +4,7 @@ const puzzleContainer = document.querySelector("#puzzle-container");
 const moveCounterElement = document.querySelector("#move-counter");
 let moveCounter = 0;
 
-let astarStepsElement = document.querySelector("#astar-steps");
+const astarStepsElement = document.querySelector("#astar-steps");
 let astarSteps = 0;
 
 let puzzle = [];
@@ -57,29 +57,30 @@ function getCol(pos) {
 
 function generatePuzzle() {
     for (let i = 1; i <= size * size; i++) {
+        const { x, y } = calculatePosition(i);
         puzzle.push({
             value: i,
             position: i,
-            x: ((getCol(i) - 1) / size) * 100,
-            y: ((getRow(i) - 1) / size) * 100,
+            x: x,
+            y: y,
             disabled: false
         });
     }
 }
 
+
 function renderPuzzle() {
     puzzleContainer.innerHTML = '';
     for (let puzzleItem of puzzle) {
-        if (puzzleItem.disabled) continue;
         const puzzleElement = document.createElement('div');
         puzzleElement.className = 'puzzle-item';
-        puzzleElement.style.left = `${puzzleItem.x}%`;
-        puzzleElement.style.top = `${puzzleItem.y}%`;
+        puzzleElement.id = `puzzle-item-${puzzleItem.value}`;
         puzzleElement.innerHTML = `<p class="puzzle-numbers">${puzzleItem.value}</p>`;
-
-        // Tambahkan event listener untuk klik
+        puzzleElement.style.transform = `translate(${puzzleItem.x}%, ${puzzleItem.y}%)`;
         puzzleElement.addEventListener('click', () => handlePuzzleClick(puzzleItem));
-
+        if (puzzleItem.disabled) {
+            puzzleElement.style.visibility = 'hidden';
+        }
         puzzleContainer.appendChild(puzzleElement);
     }
 }
@@ -203,10 +204,9 @@ function moveLeft() {
     const emptyPuzzle = getEmptyPuzzle();
     const rightPuzzle = getRightPuzzle();
     if (rightPuzzle) {
-        swapPositions(emptyPuzzle, rightPuzzle, true);
+        swapPositions(emptyPuzzle, rightPuzzle);
         moveCounter++;
         moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
-        resetPuzzleStatus();
     }
 }
 
@@ -214,10 +214,9 @@ function moveRigth() {
     const emptyPuzzle = getEmptyPuzzle();
     const leftPuzzle = getLeftPuzzle();
     if (leftPuzzle) {
-        swapPositions(emptyPuzzle, leftPuzzle, true);
+        swapPositions(emptyPuzzle, leftPuzzle);
         moveCounter++;
         moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
-        resetPuzzleStatus();
     }
 }
 
@@ -225,10 +224,9 @@ function moveUp() {
     const emptyPuzzle = getEmptyPuzzle();
     const bellowPuzzle = getBellowPuzzle();
     if (bellowPuzzle) {
-        swapPositions(emptyPuzzle, bellowPuzzle, false);
+        swapPositions(emptyPuzzle, bellowPuzzle);
         moveCounter++;
         moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
-        resetPuzzleStatus();
     }
 }
 
@@ -236,10 +234,9 @@ function moveDown() {
     const emptyPuzzle = getEmptyPuzzle();
     const abovePuzzle = getAbovePuzzle();
     if (abovePuzzle) {
-        swapPositions(emptyPuzzle, abovePuzzle, false);
+        swapPositions(emptyPuzzle, abovePuzzle);
         moveCounter++;
         moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
-        resetPuzzleStatus();
     }
 }
 
@@ -256,8 +253,22 @@ function swapPositions(item1, item2) {
     item1.y = item2.y;
     item2.y = tempY;
 
-    renderPuzzle(); // Render ulang setiap kali posisi item berubah untuk menampilkan perpindahan
+    const element1 = document.getElementById(`puzzle-item-${item1.value}`);
+    const element2 = document.getElementById(`puzzle-item-${item2.value}`);
+
+    if (element1) element1.style.transform = `translate(${item1.x}%, ${item1.y}%)`;
+    if (element2) element2.style.transform = `translate(${item2.x}%, ${item2.y}%)`;
 }
+
+function calculatePosition(position) {
+    const row = Math.floor((position - 1) / size);
+    const col = (position - 1) % size;
+    return {
+        x: col * (200 / (size - 1)),
+        y: row * (200 / (size - 1))
+    };
+}
+
 
 function resetPuzzleStatus() {
     for (let puzzleItem of puzzle) {
@@ -308,7 +319,6 @@ function getBellowPuzzle() {
 
 function getEmptyPuzzle() {
     return puzzle.find(item => item.value === size * size);
-    // return puzzle.find((item) => item.disabled)
 }
 
 function getPuzzleByPos(pos) {
@@ -355,43 +365,29 @@ document.getElementById('close-popup').addEventListener('click', function () {
     document.getElementById('puzzle-solved-popup').style.display = 'none';
 });
 
-
 async function animateSolution(moves) {
     isAnimating = true;
     puzzleContainer.classList.add('animating');
-    animationStopped = false;
+    animationStopped=false;
     for (let i = 0; i < moves.length; i++) {
         if (animationStopped) break;
         await new Promise(resolve => setTimeout(resolve, 500));
         switch (moves[i]) {
-            case "L":
-                moveLeft();
-                break;
-            case "R":
-                moveRigth();
-                break;
-            case "U":
-                moveUp();
-                break;
-            case "D":
-                moveDown();
-                break;
+            case "L": moveLeft(); break;
+            case "R": moveRigth(); break;
+            case "U": moveUp(); break;
+            case "D": moveDown(); break;
         }
-        // renderPuzzle();
         updatePuzzleState2D();
-
     }
-
     isAnimating = false;
     puzzleContainer.classList.remove('animating');
     checkPuzzleSolved(true);
 }
 
-
 document.getElementById('solve-button').addEventListener('click', async function () {
     if (isAnimating) return;
     const moves = solvePuzzle(puzzleState2d);
-    console.log(moves);
     resetCounter();
     await animateSolution(moves);
 });
