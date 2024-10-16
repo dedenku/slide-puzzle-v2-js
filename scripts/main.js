@@ -95,7 +95,7 @@ function handlePuzzleClick(clickedItem) {
         moveCounter++;
         moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
 
-        renderPuzzle();
+        // renderPuzzle();
         updatePuzzleState2D();
         checkPuzzleSolved();
 
@@ -194,7 +194,7 @@ function handelKeyDown(e) {
             moveDown();
             break;
     }
-    renderPuzzle();
+    // renderPuzzle();
     updatePuzzleState2D();
     checkPuzzleSolved(false);
 }
@@ -256,11 +256,7 @@ function swapPositions(item1, item2) {
     item1.y = item2.y;
     item2.y = tempY;
 
-
-    // Tukar status disabled
-    // temp = firstPuzzle.disabled;
-    // firstPuzzle.disabled = secondPuzzle.disabled;
-    // secondPuzzle.disabled = temp;
+    renderPuzzle(); // Render ulang setiap kali posisi item berubah untuk menampilkan perpindahan
 }
 
 function resetPuzzleStatus() {
@@ -381,7 +377,7 @@ async function animateSolution(moves) {
                 moveDown();
                 break;
         }
-        renderPuzzle();
+        // renderPuzzle();
         updatePuzzleState2D();
 
     }

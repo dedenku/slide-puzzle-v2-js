@@ -164,6 +164,7 @@ button:hover {
   box-sizing: border-box;
   z-index: 1;
   background-color: transparent;
+  transition: left 0.5s ease-out, top 0.5s ease-out; /* Durasi diperpanjang dan menggunakan easing untuk animasi yang lembut */
 }
 
 #puzzle-container.animating .puzzle-item {
@@ -171,8 +172,12 @@ button:hover {
 }
 
 @keyframes pulse {
-  from { transform: scale(1); }
-  to { transform: scale(0.98); }
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.98);
+  }
 }
 
 .puzzle-numbers {
