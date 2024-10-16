@@ -111,19 +111,6 @@ function handlePuzzleClick(clickedItem) {
     if (onClickedItem) {
         handlePuzzleClick(onClickedItem, clickedElement);
     }
-
-
-
-    // if (isAdjacent(clickedItem, emptyPuzzle)) {
-    //     const clickedElement = document.querySelector(`.puzzle-item[style*="left: ${clickedItem.x}%"][style*="top: ${clickedItem.y}%"]`);
-    //     clickedElement.classList.add('clicked');
-
-    //     setTimeout(() => {
-    //         clickedElement.classList.remove('clicked');
-    //         swapPositions(clickedItem, emptyPuzzle);
-    //         // ... kode lainnya ...
-    //     }, 100);
-    // }
 }
 
 function isAdjacent(item1, item2) {
