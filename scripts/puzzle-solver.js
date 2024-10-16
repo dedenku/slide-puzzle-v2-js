@@ -4,37 +4,6 @@ const DIRECTIONS = { "U": [1, 0], "D": [-1, 0], "L": [0, 1], "R": [0, -1] };
 // Define the goal state of the puzzle
 const END = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 
-// Unicode characters for drawing the puzzle borders
-const left_down_angle = '\u2514';
-const right_down_angle = '\u2518';
-const right_up_angle = '\u2510';
-const left_up_angle = '\u250C';
-const middle_junction = '\u253C';
-const top_junction = '\u252C';
-const bottom_junction = '\u2534';
-const right_junction = '\u2524';
-const left_junction = '\u251C';
-const bar = '|';
-const dash = '\u2500';
-
-// Predefined border lines for the puzzle display
-const first_line = `${left_up_angle}${dash.repeat(3)}${top_junction}${dash.repeat(3)}${top_junction}${dash.repeat(3)}${right_up_angle}`;
-const middle_line = `${left_junction}${dash.repeat(3)}${middle_junction}${dash.repeat(3)}${middle_junction}${dash.repeat(3)}${right_junction}`;
-const last_line = `${left_down_angle}${dash.repeat(3)}${bottom_junction}${dash.repeat(3)}${bottom_junction}${dash.repeat(3)}${right_down_angle}`;
-
-// Function to print the current state of the puzzle
-function printPuzzle(array) {
-    console.log(first_line);
-    for (let a = 0; a < array.length; a++) {
-        let row = '';
-        for (let i of array[a]) {
-            row += `${bar} ${i === 9 ? '*' : i} `;
-        }
-        console.log(row + bar);
-        console.log(a === 2 ? last_line : middle_line);
-    }
-}
-
 // Node class to represent a state in the search space
 class Node {
     constructor(current_node, previous_node, g, h, dir) {
@@ -142,19 +111,7 @@ function main(puzzle) {
     }
 }
 
-// // Solve the puzzle and extract the moves
-// let br = main([
-//     [6, 2, 8],
-//     [4, 7, 1],
-//     [9, 3, 5]
-// ]);
-
-// // Extract only the directions from the solution
-// let moves = br.map(step => step.dir).filter(dir => dir !== '');
-
-// // Output the moves as a character array
-// // console.log(moves);
-
+// Solve the puzzle and extract the moves
 function solvePuzzle(puzzleState) {
     let currentState = puzzleState.map(row => row.map(val => val === 0 ? 9 : val));
     let br = main(currentState);

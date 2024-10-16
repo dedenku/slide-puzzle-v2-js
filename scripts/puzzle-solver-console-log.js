@@ -156,6 +156,8 @@ function main(puzzle) {
 }
 
 // Main execution
+// Enter the position of all block
+// number 9 is the blank block position
 let br = main([
     [6, 2, 8],
     [4, 7, 1],

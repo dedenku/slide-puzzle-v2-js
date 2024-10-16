@@ -1,5 +1,7 @@
+// Import the puzzle solver function
 import { solvePuzzle } from './puzzle-solver.js';
 
+// Select DOM elements and initialize variables
 const puzzleContainer = document.querySelector("#puzzle-container");
 const moveCounterElement = document.querySelector("#move-counter");
 let moveCounter = 0;
@@ -13,25 +15,29 @@ let size = 3;
 let isAnimating = false;
 let animationStopped = false;
 
+// Initialize the puzzle
 generatePuzzle();
 randomizePuzzle();
 renderPuzzle();
 handleInput();
 updatePuzzleState2D();
 updateAStarSteps();
-checkPuzzleSolved('');
+checkPuzzleSolved();
 
+// Reset the move counter and update A* steps
 function resetCounter() {
     moveCounter = 0;
     moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
     updateAStarSteps();
 }
 
+// Update the number of steps required by A* algorithm
 function updateAStarSteps() {
     astarSteps = solvePuzzle(puzzleState2d).length;
     astarStepsElement.innerHTML = `A* STEPS: ${astarSteps}`;
 }
 
+// Event listener for shuffling the puzzle
 document.querySelector("#shuffle-puzzle").addEventListener('click', function () {
     if (isAnimating) return;
     puzzle = [];
@@ -43,10 +49,12 @@ document.querySelector("#shuffle-puzzle").addEventListener('click', function () 
     updatePuzzleState2D();
 });
 
+// Helper function to get the row of a position
 function getRow(pos) {
     return Math.ceil(pos / size);
 }
 
+// Helper function to get the column of a position
 function getCol(pos) {
     const col = pos % size;
     if (col === 0) {
@@ -55,6 +63,7 @@ function getCol(pos) {
     return col
 }
 
+// Generate the initial puzzle state
 function generatePuzzle() {
     for (let i = 1; i <= size * size; i++) {
         const { x, y } = calculatePosition(i);
@@ -68,7 +77,7 @@ function generatePuzzle() {
     }
 }
 
-
+// Render the puzzle in the DOM
 function renderPuzzle() {
     puzzleContainer.innerHTML = '';
     for (let puzzleItem of puzzle) {
@@ -85,23 +94,20 @@ function renderPuzzle() {
     }
 }
 
+// Handle click events on puzzle pieces
 function handlePuzzleClick(clickedItem) {
     const emptyPuzzle = getEmptyPuzzle();
 
-    // Cek apakah blok yang diklik bersebelahan dengan blok kosong
+    // Check if the clicked piece is adjacent to the empty space
     if (isAdjacent(clickedItem, emptyPuzzle)) {
-
-        // Tukar posisi
         swapPositions(clickedItem, emptyPuzzle);
         moveCounter++;
         moveCounterElement.innerHTML = `MOVES: ${moveCounter}`;
-
-        // renderPuzzle();
         updatePuzzleState2D();
         checkPuzzleSolved();
 
     }
-    if (isAnimating) return; // Abaikan klik jika sedang animasi
+    if (isAnimating) return; // Ignore clicks during animation
 
     const clickedElement = clickedItem.target.closest('.puzzle-item');
     if (!clickedElement) return;
@@ -114,6 +120,7 @@ function handlePuzzleClick(clickedItem) {
     }
 }
 
+// Check if two puzzle pieces are adjacent
 function isAdjacent(item1, item2) {
     const rowDiff = Math.abs(getRow(item1.position) - getRow(item2.position));
     const colDiff = Math.abs(getCol(item1.position) - getCol(item2.position));
@@ -122,7 +129,7 @@ function isAdjacent(item1, item2) {
     return (rowDiff + colDiff === 1);
 }
 
-
+// Randomize the puzzle
 function randomizePuzzle() {
     resetPuzzleStatus();
     do {
@@ -139,6 +146,7 @@ function randomizePuzzle() {
     updateAStarSteps();
 }
 
+// Check if the puzzle is solvable
 function isSolvable(state) {
     // Flatten state if it's a 2D array
     const flatState = Array.isArray(state[0]) ? state.flat() : state;
@@ -162,6 +170,7 @@ function isSolvable(state) {
     return inversions % 2 === 0;
 }
 
+// Generate random values for puzzle pieces
 function getRandomValues() {
     const values = []
     for (let i = 1; i <= size * size; i++) {
@@ -172,34 +181,25 @@ function getRandomValues() {
     return randomValues;
 }
 
+// Set up keyboard input handling
 function handleInput() {
     document.addEventListener('keydown', handelKeyDown)
 }
 
+// Handle keyboard input
 function handelKeyDown(e) {
-    if (isAnimating) return; // Abaikan input jika sedang animasi
+    if (isAnimating) return; // Ignore input during animation
     switch (e.key) {
-        case 'ArrowLeft':
-            moveLeft();
-            break;
-
-        case 'ArrowRight':
-            moveRigth();
-            break;
-
-        case 'ArrowUp':
-            moveUp();
-            break;
-
-        case 'ArrowDown':
-            moveDown();
-            break;
+        case 'ArrowLeft': moveLeft(); break;
+        case 'ArrowRight': moveRigth(); break;
+        case 'ArrowUp': moveUp(); break;
+        case 'ArrowDown': moveDown(); break;
     }
-    // renderPuzzle();
     updatePuzzleState2D();
     checkPuzzleSolved(false);
 }
 
+// Move functions for each direction
 function moveLeft() {
     const emptyPuzzle = getEmptyPuzzle();
     const rightPuzzle = getRightPuzzle();
@@ -240,11 +240,14 @@ function moveDown() {
     }
 }
 
+// Swap positions of two puzzle pieces
 function swapPositions(item1, item2) {
+    // Swap position, x, and y values
     const tempPosition = item1.position;
     item1.position = item2.position;
     item2.position = tempPosition;
 
+    // Update DOM elements
     const tempX = item1.x;
     item1.x = item2.x;
     item2.x = tempX;
@@ -260,6 +263,7 @@ function swapPositions(item1, item2) {
     if (element2) element2.style.transform = `translate(${item2.x}%, ${item2.y}%)`;
 }
 
+// Calculate position based on puzzle piece number
 function calculatePosition(position) {
     const row = Math.floor((position - 1) / size);
     const col = (position - 1) % size;
@@ -269,14 +273,14 @@ function calculatePosition(position) {
     };
 }
 
-
+// Reset puzzle status (disable the last piece)
 function resetPuzzleStatus() {
     for (let puzzleItem of puzzle) {
         puzzleItem.disabled = (puzzleItem.value === size * size);
     }
 }
 
-
+// Helper functions to get adjacent puzzle pieces
 function getLeftPuzzle() {
     const emptyPuzzle = getEmptyPuzzle();
     const isLeftEdge = getCol(emptyPuzzle.position) === 1;
@@ -317,14 +321,17 @@ function getBellowPuzzle() {
     return puzzle;
 }
 
+// Get the empty puzzle piece
 function getEmptyPuzzle() {
     return puzzle.find(item => item.value === size * size);
 }
 
+// Get puzzle piece by position
 function getPuzzleByPos(pos) {
     return puzzle.find((item) => item.position === pos)
 }
 
+// Update the 2D representation of the puzzle state
 function updatePuzzleState2D() {
     puzzleState2d = [];
     for (let i = 0; i < size; i++) {
@@ -336,6 +343,7 @@ function updatePuzzleState2D() {
     }
 }
 
+// Check if the puzzle is solved
 function checkPuzzleSolved(isAutoSolved = false) {
     const solvedPuzzle = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
     const isSolved = puzzleState2d.every((row, i) =>
@@ -360,15 +368,16 @@ function checkPuzzleSolved(isAutoSolved = false) {
     }
 }
 
-//POP UP SOLVED CLOSE
+// Close the solved puzzle popup
 document.getElementById('close-popup').addEventListener('click', function () {
     document.getElementById('puzzle-solved-popup').style.display = 'none';
 });
 
+// Animate the solution
 async function animateSolution(moves) {
     isAnimating = true;
     puzzleContainer.classList.add('animating');
-    animationStopped=false;
+    animationStopped = false;
     for (let i = 0; i < moves.length; i++) {
         if (animationStopped) break;
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -385,6 +394,7 @@ async function animateSolution(moves) {
     checkPuzzleSolved(true);
 }
 
+// Event listener for the solve button
 document.getElementById('solve-button').addEventListener('click', async function () {
     if (isAnimating) return;
     const moves = solvePuzzle(puzzleState2d);
@@ -392,7 +402,7 @@ document.getElementById('solve-button').addEventListener('click', async function
     await animateSolution(moves);
 });
 
-//stop solving animation
+// Event listener to stop the solving animation
 document.getElementById('stop-animation').addEventListener('click', function () {
     isAnimating = false;
     animationStopped = true;
