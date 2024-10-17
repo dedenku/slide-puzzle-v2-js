@@ -4,10 +4,9 @@ This project is a slide puzzle game implemented using HTML, CSS, and vanilla Jav
 
 ## Features
 
-- Classic slide puzzle gameplay
+- Classic 3*3 or 8 slide puzzle gameplay
 - Responsive design
 - Auto-solve feature using A* algorithm
-- Customizable puzzle size
 
 ## Technologies Used
 
@@ -31,7 +30,7 @@ This project was inspired by the following YouTube videos:
 
 ## Contributing
 
-Contributions, issues, and feature requests are welcome. Feel free to check the [issues page](https://github.com/your-username/repo-name/issues) if you want to contribute.
+Contributions, issues, and feature requests are welcome. Feel free to check the [issues page]([https://github.com/your-username/repo-name/issues](https://github.com/dedenku/slide-puzzle-v2-js/issues)) if you want to contribute.
 
 ## License
 
