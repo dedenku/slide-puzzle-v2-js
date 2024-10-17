@@ -11,6 +11,29 @@
 body {
   padding: 0;
   background-color: var(--dark-color);
+  overflow-x: hidden;
+}
+
+.github-link {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  top: 0;
+  right: 0;
+  translate: 45% -40%;
+  width: 150px;
+  height: 75px;
+  background-color: #ffffff;
+  z-index: 10;
+  padding: 10px;
+  transform: rotate(-135deg);
+  box-shadow: 0 0 16px rgba(190, 190, 190, 0.575);
+  border-radius: 50%;
+}
+
+.bi-github {
+  transform: rotate(135deg);
 }
 
 .grid-container {
@@ -225,7 +248,7 @@ button:hover {
 #puzzle-solved-title,
 #puzzle-solved-message,
 #close-popup {
-  margin: .5rem;
+  margin: 0.5rem;
 }
 
 #puzzle-solved-title {
@@ -234,9 +257,9 @@ button:hover {
   font-size: 1.5rem;
 }
 
-#puzzle-solved-message{
+#puzzle-solved-message {
   color: rgb(139, 139, 139);
-  font-size: .8;
+  font-size: 0.8;
 }
 
 #close-popup {
@@ -246,13 +269,65 @@ button:hover {
   color: white;
   padding: 8px;
   border-radius: 4px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, .3);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 768px) {
   :root {
     --box-size: 300px;
     --block-size: 100px;
+  }
+
+  .github-link {
+    /* display: none; */
+    position: fixed;
+    display: flex;
+    align-items: center;
+    background-image: conic-gradient(
+      #ee7752,
+      #e73c7e,
+      #23a6d5,
+      #23d5ab,
+      #ee7752
+    );
+    height: 28px;
+    width: 28px;
+    top: 100%;
+    right: 25%;
+    border-radius: 50%;
+
+    -webkit-animation: slide-left 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both
+      infinite alternate;
+    animation: slide-left 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite
+      alternate;
+    &:hover {
+      animation-play-state: paused;
+    }
+    .bi-github {
+      rotate: -135deg;
+      fill: #ffffff;
+    }
+  }
+
+  @-webkit-keyframes slide-left {
+    0% {
+      -webkit-transform: translatey(0);
+      transform: translatey(0);
+    }
+    100% {
+      -webkit-transform: translatey(-250px);
+      transform: translatey(-250px);
+    }
+  }
+  @keyframes slide-left {
+    0% {
+      -webkit-transform: translatey(0);
+      transform: translatey(0);
+    }
+    100% {
+      -webkit-transform: translatey(-250px);
+      transform: translatey(-250px);
+    }
   }
 
   .grid-container {
